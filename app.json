@@ -1,9 +1,9 @@
 
 {
-    "name": "lite-session",
+    "name": "lite-pair-test",
     "description": "Web Session Generator",
     "logo": "https://qu.ax/LpUWv.jpg",
-    "repository": "https://github.com/Qadeer-bhai/lite-session",
+    "repository": "https://github.com/Qadeer-Xtech/lite-pair-test",
     "keywords": ["Malvin-Tech"],
     "success_url": "/", 
     "buildpacks": [{ "url": "https://github.com/heroku/heroku-buildpack-nodejs#latest" } ],

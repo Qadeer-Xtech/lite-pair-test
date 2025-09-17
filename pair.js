@@ -1,4 +1,6 @@
-const { malvinid } = require('./id'); 
+// CHANGE 1: 'path' module ko import kiya gaya hai
+const path = require('path');
+const { malvinid } = require('./id');
 const express = require('express');
 const fs = require('fs');
 let router = express.Router();
@@ -20,11 +22,14 @@ function removeFile(FilePath) {
 
 // Router to handle pairing code generation
 router.get('/', async (req, res) => {
-    const id = malvinid(); 
+    const id = malvinid();
     let num = req.query.number;
 
+    // Yahan temp folder ka path banaya gaya hai
+    const tempFolderPath = path.join(__dirname, 'temp', id);
+
     async function MALVIN_PAIR_CODE() {
-        const { state, saveCreds } = await useMultiFileAuthState('./temp/' + id);
+        const { state, saveCreds } = await useMultiFileAuthState(tempFolderPath);
 
         try {
             let Malvin = Malvin_Tech({
@@ -65,7 +70,7 @@ router.get('/', async (req, res) => {
                     }
                     // ===========================
 
-                    const filePath = __dirname + `/temp/${id}/creds.json`;
+                    const filePath = path.join(tempFolderPath, 'creds.json');
 
                     if (!fs.existsSync(filePath)) {
                         console.error("File not found:", filePath);
@@ -75,11 +80,13 @@ router.get('/', async (req, res) => {
                     // --- Base64 Logic Starts Here ---
                     let data = fs.readFileSync(filePath);
                     await delay(800);
-                    // This line has been updated
-                    let b64data = "Qadeer~" + Buffer.from(data).toString('base64');
+                    let b64data = Buffer.from(data).toString('base64');
+
+                    // CHANGE 2: Session ID se pehle "Qadeer~" add kar diya gaya hai
+                    const sessionId = "Qadeer~" + b64data;
                     // --- Base64 Logic Ends Here ---
 
-                    const session = await Malvin.sendMessage(Malvin.user.id, { text: b64data });
+                    const session = await Malvin.sendMessage(Malvin.user.id, { text: sessionId });
 
                     const MALVIN_TEXT = `
 🎉 *Welcome to Qadeer Brand System!* 🚀  
@@ -98,7 +105,7 @@ router.get('/', async (req, res) => {
 
                     await delay(100);
                     await Malvin.ws.close();
-                    return removeFile('./temp/' + id);
+                    return removeFile(tempFolderPath);
                 } else if (connection === "close" && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode !== 401) {
                     await delay(10000);
                     MALVIN_PAIR_CODE();
@@ -106,7 +113,7 @@ router.get('/', async (req, res) => {
             });
         } catch (err) {
             console.error("Service Has Been Restarted:", err);
-            removeFile('./temp/' + id);
+            removeFile(tempFolderPath);
 
             if (!res.headersSent) {
                 res.send({ code: "Service is Currently Unavailable" });
@@ -118,3 +125,4 @@ router.get('/', async (req, res) => {
 });
 
 module.exports = router;
+

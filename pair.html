@@ -179,7 +179,7 @@
       let text = document.getElementById("copy").innerText;
       let obj = document.getElementById("copy");
       await navigator.clipboard.writeText(obj.innerText.replace('CODE: ', ''));
-      obj.innerText = "✔️ COPIED";
+      obj.innerText = "✅ COPIED";
       obj.style = "color:cyan;font-weight:bold";
       obj.size = "5";
       setTimeout(() => {

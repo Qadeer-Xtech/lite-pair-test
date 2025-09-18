@@ -10,19 +10,13 @@ require('events').EventEmitter.defaultMaxListeners = 500;
 
 // Define routes
 const pairRouter = require('./pair');
-const qrRouter = require('./qr');
 
 // Mount API routes
 app.use('/get-code', pairRouter); // For pairing code logic
-app.use('/get-qr', qrRouter);     // For QR code logic
 
 // Serve static HTML files
 app.use('/pair', (req, res) => {
     res.sendFile(path.join(__path, 'pair.html'));
-});
-
-app.use('/qr', (req, res) => {
-    res.sendFile(path.join(__path, 'qr.html'));
 });
 
 // Serve the main index page at the root
